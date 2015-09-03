@@ -9,6 +9,8 @@ import string
 mps = {}
 mpsLock = threading.Lock()
 signing_server_address = None
+shared_memory = '/dev/shm'
+openssl_path = 'openssl'
 
 
 reliable_sites = {} #format {'github.com': {'expires':'date', 'modulus':data}, 'archive.org': {...}   }
@@ -105,9 +107,9 @@ class MessageProcessor(object):
             response_hash = commit_hash[:32]
             data_to_be_signed = hashlib.sha256(response_hash + self.tlsns.pms2 + self.tlsns.server_modulus).digest()
 
-            uid = '/dev/shm/' + ''.join(random.choice(string.ascii_letters + string.digits) for x in range(10))
+            uid = os.path.join(shared_memory, ''.join(random.choice(string.ascii_letters + string.digits) for x in range(10)))
             with open(uid, 'wb') as f: f.write(data_to_be_signed)
-            mysig = subprocess.check_output(['openssl','rsautl','-sign','-inkey', '/dev/shm/main_server_private.pem' ,'-keyform','PEM', '-in', uid])
+            mysig = subprocess.check_output([openssl_path,'rsautl','-sign','-inkey', os.path.join(shared_memory, 'main_server_private.pem') ,'-keyform','PEM', '-in', uid])
 
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             server_address = (signing_server_address, 10003)
@@ -133,6 +135,7 @@ def handler(sock):
         request = None
         data = None
         uid = None
+        print ('got lines', lines)
         for x in lines:
             if x.startswith('Request: '):
                 request = x[len('Request: '):]
@@ -187,6 +190,12 @@ def mps_purge():
 
 
 if __name__ == "__main__":
+    for arg in sys.argv:
+        if arg.startswith('shared_memory='):
+            shared_memory = arg.split('=')[1]
+        if arg.startswith('openssl_path='):
+            openssl_path = arg.split('=')[1]
+    
     proj_dir = os.path.dirname(os.path.realpath(__file__))
     sys.path.append(proj_dir)
     import shared
@@ -206,5 +215,6 @@ if __name__ == "__main__":
         try:
             connection, client_address = sock.accept()
             threading.Thread(target=handler, args=(connection,)).start()
-        except:
+        except Exception as e:
+            print('Exception in notaryserver.py', e)
             pass
