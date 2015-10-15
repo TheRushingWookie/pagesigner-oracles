@@ -1,0 +1,27 @@
+[
+{"This is a comment":
+"The oracle code only reads the topmost item of this list - that's the item right below this comment. Older items can be left here for archival purposes. How to get first and second sha256 checksum is explained in INSTALL.oracles section FOR VERIFIERS: HOW TO CHECK THAT THE SNAPSHOT CONTENTS WAS NOT MALICIOUSLY MODIFIED. Use aws_query.py to create Query API URLs. The idea is that the new oracle will mount the old oracle's snapshot on start, then it will use API URLs to make sure the correct snapshots were indeed mounted, then it will compare the checksum from this file to the actual checksum of the mounted snapshot. If the checksums don't match, the new oracle will refuse to start."
+},
+ 
+{
+"previous notary oracle":
+	{
+	"snapshot id":"snap-cdd399f8",
+	"first sha256 checksum":"34080eda67a35319bf851b2bde3b8aedd66d6b89efc7485d33c6e7a53f835708",
+	"second sha256 checksum":"bb2a680c704313bf65e4d21cb95f32c9178a2606ea02125e7816f82344334e7b"
+	},
+"previous signing oracle":
+	{
+	"snapshot id":"snap-00083b35",
+	"first sha256 checksum":"36ccd115a8752af2f37126218be69cb18bd936cf2a09572197da60a973d7ee50",
+	"second sha256 checksum":"c31586a6d425b073e451dfb9b3fc2c13d6cdcbcd3a0108a0d9dd7e40615abcbc"
+	},
+"new oracles Query API URLs":
+	{ "DescribeInstances":"https://ec2.ap-southeast-1.amazonaws.com/?AWSAccessKeyId=AKIAI4JVMNYTLRZ3NW2Q&Action=DescribeInstances&Expires=2015-11-01&SignatureMethod=HmacSHA256&SignatureVersion=2&Version=2014-10-01&Signature=4nt7DY0NB8iW2y413LRKmEPqzenjYKfonIMcwn7vWwo%3D",
+	"DescribeVolumes":"https://ec2.ap-southeast-1.amazonaws.com/?AWSAccessKeyId=AKIAI4JVMNYTLRZ3NW2Q&Action=DescribeVolumes&Expires=2015-11-01&SignatureMethod=HmacSHA256&SignatureVersion=2&Version=2014-10-01&Signature=%2Bih1c57Iw1b%2FAe4ZJ4oVlcpbEGqK74sA04EhH7RWnRE%3D"
+	},
+"(optional field for humans) Date when new oracles started":"Nov 2015"
+
+
+}
+]

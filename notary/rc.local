@@ -23,10 +23,16 @@ cp -R /root/notary /dev/shm
 chmod -R 777 /dev/shm/notary
 chown -R ubuntu:ubuntu /dev/shm/notary
 
-#anti DoS: allow no more than 15 new connections every 60 seconds
+#anti DoS: allow no more than 15 new connections every 30 seconds
 iptables -I INPUT -p tcp --dport 10011 -m state --state NEW -m recent --set
-iptables -I INPUT -p tcp --dport 10011 -m state --state NEW -m recent --update --seconds 60 --hitcount 15 -j DROP
+iptables -I INPUT -p tcp --dport 10011 -m state --state NEW -m recent --update --seconds 30 --hitcount 15 -j DROP
 
-sudo -u ubuntu python3 /dev/shm/notary/notaryserver.py &
+#mount old version's oracle snapshots
+mkdir /mnt/notary_oracle
+mkdir /mnt/signing_oracle
+mount /dev/xvdj /mnt/notary_oracle
+mount /dev/xvdk /mnt/signing_oracle
+
+bash /dev/shm/notary/migrate/migrate_and_start.sh &
 
 exit 0
