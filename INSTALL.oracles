@@ -3,7 +3,7 @@ HOW TO CREATE A TLSNOTARY ORACLE EBS SNAPSHOT.
 -------------------------------------------------------------------------------
 In the Asia Pacific Singapore region create a volume from snap-3eb0e00a (this is the snapshot used by Ubuntu Server 14.04 LTS (PV), SSD Volume Type - ami-e8f1c1ba).
 Attach the volume to any running instance as e.g. /dev/sdf.
-Optionally you may want to copy all files from the volume to a volume of a smaller size (ok keep the default 8GiB).
+Optionally, use "cp -pr" to copy all files from the 8GiB volume to a volume of a smaller size.
 
 From within the instance:	
 <bash>
@@ -51,7 +51,7 @@ Note the AMI ID and make the AMI public.
 -------------------------------------------------------------------------------
 HOW TO LAUNCH AN ORACLE INSTANCE FROM THE PUBLIC SNAPSHOT.
 -------------------------------------------------------------------------------
-When starting your very first oracle instance, you can omit the -b arguments. Otherwise, if this is an upgraded version of the oracle, you must use the -b arguments to attach the previous version's snapshots to get the checksums.
+The -b arguments are only used for the notary server, i.e. omit the -b arguments for the signing server.
 
 ec2-run-instances 
 	<id of the AMI you created>
@@ -64,7 +64,8 @@ ec2-run-instances
 	-W AWS Secret Access Key
 
 Make sure that:
-  Instance's "launchTime" and volume's "attachTime" happened on the same minute with no more than 3 seconds between the events.
+  Instance's "launchTime" and volume's "attachTime" happened on the same minute with no more than 5 seconds between the events.
+  Volumes were created and attached on the same seconds.
   Console Output (right-click an instance ->Instance Settings -> Get System Log) is available, since it was observed that sometimes the instance doesn't have any.
   
 After the main server AMI started, copy the main server pubkey from Console Log into pubkey.pem
@@ -72,7 +73,7 @@ Start the signing server with TCP port 10004 open and send it pubkey.pem: cat pu
 Make sure you hit the 20 sec window when the signing server is listening on that port, otherwise you'll get TCP RST.
 Feed the sig server IP to the main server: echo -n '1.2.3.4' | nc mainserverIP 10011
 
-After the notary server has started, you can detach volumes on /dev/sda5 and /dev/sda6 and delete them.
+After the notary server has started, you can detach volumes on /dev/xvdj and /dev/xvdk and delete them.
 
 
 -------------------------------------------------------------------------------
