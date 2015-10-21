@@ -15,7 +15,7 @@
 echo ubuntu:$(tr -dc "[:alpha:]" < /dev/urandom | head -c 20) | chpasswd
 sudo -u ubuntu openssl genrsa -out /dev/shm/signing_server_private.pem 4096
 sudo -u ubuntu openssl rsa -in /dev/shm/signing_server_private.pem -outform PEM -pubout -out /dev/shm/signing_server_public.pem
-echo "TLSNotary siging server pubkey:"
+echo "TLSNotary signing server pubkey:"
 cat /dev/shm/signing_server_public.pem
 cp /root/signing_server/signing_server.py /dev/shm/signing_server.py
 chmod 777 /dev/shm/signing_server.py && chown ubuntu:ubuntu /dev/shm/signing_server.py
